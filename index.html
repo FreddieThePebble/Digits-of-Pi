@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digits of π</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Push content higher */
+            height: 100vh;
+            margin: 0;
+            background-color: #121212;
+            color: #f0f0f0;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin: 10px 0; /* Moved title higher */
+            color: #BB86FC;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5); /* White outline */
+        }
+
+        #digitRow {
+            font-size: 2em;
+            padding: 10px;
+            border: 2px solid #BB86FC;
+            width: 100%; /* Stretches the digit row across the screen */
+            min-height: 50px;
+            text-align: left;
+            color: #f0f0f0;
+            background-color: #1E1E1E;
+            box-sizing: border-box;
+            overflow-x: auto; /* Allows horizontal scrolling */
+            white-space: nowrap;
+            margin: 10px 0; /* Moved digit row higher */
+        }
+
+        #counter {
+            font-size: 1.5em;
+            margin: 10px 0; /* Moved counter higher */
+            color: white;
+        }
+
+        #prompt {
+            margin: 0 0 20px; /* Adjusted margin for prompt */
+            font-size: 1.2em;
+            color: #f0f0f0;
+        }
+
+        #keyboard {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            grid-gap: 2px;
+        }
+
+        .key {
+            width: 100%;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            border: 2px solid purple;
+            font-size: 1.5em;
+            color: black;
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+
+        .key:hover {
+            background-color: #f0f0f0;
+            color: black;
+        }
+
+        .incorrect {
+            background-color: red !important;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Digits of π</h1>
+
+    <!-- Prompt -->
+    <div id="prompt">How many digits of pi can you name?</div>
+
+    <!-- Full-width row with scrollable content, starting with "3." -->
+    <div id="digitRow">3.</div>
+
+    <!-- Digit counter -->
+    <div id="counter">Digits: 1</div>
+
+    <div id="keyboard">
+        <!-- Number buttons for input (1x10 layout) -->
+        <button class="key" data-digit="1">1</button>
+        <button class="key" data-digit="2">2</button>
+        <button class="key" data-digit="3">3</button>
+        <button class="key" data-digit="4">4</button>
+        <button class="key" data-digit="5">5</button>
+        <button class="key" data-digit="6">6</button>
+        <button class="key" data-digit="7">7</button>
+        <button class="key" data-digit="8">8</button>
+        <button class="key" data-digit="9">9</button>
+        <button class="key" data-digit="0">0</button>
+    </div>
+
+    <script>
+        const digitRow = document.getElementById('digitRow');
+        const counter = document.getElementById('counter');
+        const keyboard = document.getElementById('keyboard');
+        let characterCount = 1; // Start with 1 because "3." is already there
+        const piDigits = "3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196442881097566593344612847564823378678316527120190914564856692346034861045432664821339360726024914127372458700660631558817488152092096282925409171536436789259036001133053054882046652138414695194151160943305727036575959195309218611738193261179310511854807446237996274956735188575272489122793818301194912883142607678536359155528216427980524417695768716144503313088219762791871030491034632525214310000000000000000000000000000000000000000000000000";
+
+        // Add event listener to each number button (on-screen keyboard)
+        keyboard.addEventListener('click', (e) => {
+            if (e.target.classList.contains('key')) {
+                const digit = e.target.textContent;
+                appendDigit(digit, e.target);
+            }
+        });
+
+        // Add event listener for typing numbers on the physical keyboard
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') { // Only allow numeric input
+                const button = [...keyboard.children].find(btn => btn.textContent === e.key);
+                appendDigit(e.key, button);
+            }
+        });
+
+        // Function to append digits and update the counter and scroll position
+        function appendDigit(digit, button) {
+            const userInput = digitRow.textContent + digit;
+            
+            if (checkDigit(userInput)) {
+                digitRow.textContent += digit; // Append the digit to the row
+                characterCount++;
+                counter.textContent = `Digits: ${characterCount}`;
+                digitRow.scrollLeft = digitRow.scrollWidth; // Auto scroll to the right
+
+                // If 100 digits are reached, open the YouTube video in a new tab
+                if (characterCount === 100) {
+                    window.open("https://www.youtube.com/watch?v=e8cUYr5o428", "_blank");
+                }
+            } else {
+                button.classList.add('incorrect'); // Turn key red
+                setTimeout(() => button.classList.remove('incorrect'), 500); // Remove red after 500ms
+            }
+        }
+
+        // Check if the digit input matches piDigits so far
+        function checkDigit(userInput) {
+            return piDigits.startsWith(userInput);
+        }
+    </script>
+
+</body>
+</html>
